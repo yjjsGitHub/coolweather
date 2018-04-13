@@ -89,32 +89,33 @@ public class ChooseAreaFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if(currentLevel == LEVEL_PROVINCE){
-                    selectedProvince = provinceList.get(position);
-                    queryCities();
-                }else if(currentLevel ==LEVEL_CITY){
-                    selectedCity = cityList.get(position);
-                    queryCounties();
-                }else if (currentLevel == LEVEL_COUNTY) {
-                    String weatherId = countyList.get(position).getWeatherId();
+        listView.setOnItemClickListener((parent, view, position, id) -> {
+            if(currentLevel == LEVEL_PROVINCE){
+                selectedProvince = provinceList.get(position);
+                queryCities();
+            }else if(currentLevel ==LEVEL_CITY){
+                selectedCity = cityList.get(position);
+                queryCounties();
+            }else if (currentLevel == LEVEL_COUNTY) {
+                String weatherId = countyList.get(position).getWeatherId();
+                if (getActivity() instanceof MainActivity) {
                     Intent intent = new Intent(getActivity(), WeatherAcitivity.class);
                     intent.putExtra("weather_id", weatherId);
                     startActivity(intent);
                     getActivity().finish();
+                } else if (getActivity() instanceof WeatherAcitivity) {
+                    WeatherAcitivity acitivity = (WeatherAcitivity) getActivity();
+                    acitivity.drawerLayout.closeDrawers();
+                    acitivity.swipeRefresh.setRefreshing(true);
+                    acitivity.requestWeather(weatherId);
                 }
             }
         });
-        backButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (currentLevel == LEVEL_COUNTY){
-                    queryCities();
-                }else if(currentLevel == LEVEL_CITY){
-                    queryProvinces();
-                }
+        backButton.setOnClickListener(v -> {
+            if (currentLevel == LEVEL_COUNTY){
+                queryCities();
+            }else if(currentLevel == LEVEL_CITY){
+                queryProvinces();
             }
         });
         queryProvinces();
