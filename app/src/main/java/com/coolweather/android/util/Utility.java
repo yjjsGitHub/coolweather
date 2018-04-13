@@ -95,7 +95,6 @@ public class Utility {
             String weatherContent = jsonArray.getJSONObject(0).toString();
             return new Gson().fromJson(weatherContent, Weather.class);
         } catch (JSONException e) {
-            System.out.println("这里有错！");
             e.printStackTrace();
         }
         return null;
